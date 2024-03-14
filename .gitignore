@@ -1,1 +1,5 @@
 build/*
+build_install/*
+imgui/build/*
+implot/build/*
+implot_demos/build/*
