@@ -79,6 +79,7 @@ set(IMGUI_SRC
 find_package(OpenGL REQUIRED)
 
 add_library(imgui ${IMGUI_HEADERS} ${IMGUI_SRC})
+
 if(MSVC)
   target_compile_options(imgui PRIVATE /W4 /WX /arch:AVX2 /fp:fast)
 endif()

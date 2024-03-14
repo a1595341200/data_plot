@@ -13,6 +13,26 @@ add_subdirectory(implot)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/3rdparty/glad)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/3rdparty/nativefiledialog-extended)
 
+add_library(app 
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/App.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/App.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Shader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Native.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Native.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Image.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/Fonts.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/FontAwesome5.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoRegular.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoBold.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoItalic.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoMonoRegular.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoMonoBold.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoMonoItalic.cpp
+)
+target_include_directories(app PUBLIC common)
+target_link_libraries(app implot nfd glad)
+target_compile_features(app PRIVATE cxx_std_17)
+
 add_executable(plotdemo 
     main.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/App.cpp
