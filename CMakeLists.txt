@@ -1,49 +1,22 @@
 cmake_minimum_required(VERSION 3.15)
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/imgui
-    ${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/3rdparty
-)
+project(plotdemo)
+# set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/../../build_install)
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build_install")
+# include_directories(
+#     ${CMAKE_CURRENT_SOURCE_DIR}/imgui
+#     ${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends
+#     ${CMAKE_CURRENT_SOURCE_DIR}/implot
+#     ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common
+#     ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/3rdparty
+# )
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
-add_subdirectory(imgui)
-add_subdirectory(implot)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/3rdparty/glad)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/3rdparty/nativefiledialog-extended)
-
-add_library(app 
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/App.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/App.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Shader.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Native.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Native.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Image.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/Fonts.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/FontAwesome5.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoRegular.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoBold.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoItalic.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoMonoRegular.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoMonoBold.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoMonoItalic.cpp
-)
-target_include_directories(app PUBLIC common)
-target_link_libraries(app implot nfd glad)
-target_compile_features(app PRIVATE cxx_std_17)
+find_package(imgui CONFIG REQUIRED)
+find_package(implot CONFIG REQUIRED)
+find_package(app CONFIG REQUIRED)
 
 add_executable(plotdemo 
     main.cpp 
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/App.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/Fonts.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/FontAwesome5.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoRegular.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoBold.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoItalic.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoMonoRegular.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoMonoBold.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot_demos/common/Fonts/RobotoMonoItalic.cpp
-
 )
-target_link_libraries(plotdemo implot glad nfd)
+target_link_libraries(plotdemo app::app)
+target_compile_features(plotdemo PRIVATE cxx_std_17)

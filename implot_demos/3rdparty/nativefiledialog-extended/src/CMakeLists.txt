@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.15)
 set(TARGET_NAME nfd)
 
 set(SOURCE_FILES
