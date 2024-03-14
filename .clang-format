@@ -1,0 +1,53 @@
+---
+BasedOnStyle: Google
+---
+Language:                               Cpp
+Cpp11BracedListStyle:                   true
+Standard:                               Cpp11
+CommentPragmas:                         '^ NOLINT'
+ColumnLimit:    100
+SortIncludes:   true
+
+# 访问说明符(public、private等)的偏移(缩进或者对齐) 在原来已有的基础之上
+AccessModifierOffset:	-4
+
+# 开括号(开圆括号、开尖括号、开方括号)后的对齐: Align, DontAlign, AlwaysBreak(总是在开括号后换行)
+AlignAfterOpenBracket:	AlwaysBreak
+
+AllowShortIfStatementsOnASingleLine:	false # 允许短的if语句保持在同一行
+# 允许短的块放在同一行
+AllowShortBlocksOnASingleLine:	false
+# 允许短的case标签放在同一行
+AllowShortCaseLabelsOnASingleLine:	false
+# 允许短的函数放在同一行: None, InlineOnly(定义在类中), Empty(空函数), Inline(定义在类中，空函数), All
+AllowShortFunctionsOnASingleLine:	Empty
+# 4个空格对齐
+IndentWidth: 4
+# Mimic cpplint style
+IncludeCategories:
+  # Note that the "main" header is priority 0
+  # The priority is assigned to first match in the ordered list
+  # Miscelaneous system libraries
+  - Regex:       '<(immintrin.h|malloc.h|wait.h|x86intrin.h|cuda.*)>'
+    Priority:    3
+  # C standard libraries
+  - Regex:       '<(arpa/|netinet/|net/if|sys/)?[^\./]*\.h>'
+    Priority:    1
+  # C++ standard libraries
+  - Regex:       '<[^/\./]*>'
+    Priority:    2
+  # Experimental or other system libraries
+  - Regex:       '<'
+    Priority:    3
+  # Test libs
+  - Regex:       '"(gtest|gmock)/'
+    Priority:    4
+  # Protobuf Files
+  - Regex:       '\.pb\.h'
+    Priority:    6
+  # Apollo libs
+  - Regex:       '^"(cyber|modules)'
+    Priority:    7
+  # The rest
+  - Regex:       '.*'
+    Priority:    5 
