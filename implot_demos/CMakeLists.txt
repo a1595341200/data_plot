@@ -9,7 +9,7 @@ list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../build_install")
 
 find_package(imgui CONFIG REQUIRED)
 find_package(implot CONFIG REQUIRED)
-find_package(glfw3 CONFIG REQUIRED)
+# find_package(glfw3 CONFIG REQUIRED)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/common
@@ -31,7 +31,8 @@ target_include_directories(${PROJECT_N}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
     $<INSTALL_INTERFACE:include/app>
 )
-target_link_libraries(${PROJECT_N}  
+target_link_libraries(${PROJECT_N}
+    PUBLIC
     implot::implot
     nfd
     glad

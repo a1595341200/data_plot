@@ -7,6 +7,7 @@ project(${PROJECT_N} LANGUAGES CXX)
 # FetchContent_MakeAvailable(glfw)
 
 find_package(glfw3 CONFIG REQUIRED)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED  TRUE)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/../../build_install)
@@ -30,7 +31,8 @@ list(APPEND backends_src_files
 list(APPEND PRJ_LIBRARIES ${GLFW_LIB})
 list(APPEND PRJ_LIBRARIES ${OPENGL_LIBRARIES})
 
-add_library(${PROJECT_N} SHARED ${imgui_src_files} ${backends_src_files})
+add_library(${PROJECT_N} ${imgui_src_files} ${backends_src_files})
+# add_library(${PROJECT_N} SHARED ${imgui_src_files} ${backends_src_files})
 
 target_include_directories(${PROJECT_N}
         PUBLIC
@@ -43,10 +45,10 @@ target_include_directories(${PROJECT_N}
 target_link_libraries(${PROJECT_N}
         PUBLIC
         ${PRJ_LIBRARIES}
-        ${GLFW_LIBRARIES}
         # ${GLFW_LIBRARIES} glfw GL
         glfw
 )
+
 install(TARGETS ${PROJECT_N} 
             EXPORT imgui
             RUNTIME DESTINATION bin
@@ -85,14 +87,12 @@ if(${BUILD_DEMO})
                 target_link_libraries(demo PUBLIC 
                         imgui 
                         ${GLFW_LIBRARIES} 
-                        glfw
                         "-framework OpenGL"
                 )
         else()
                 target_link_libraries(demo PUBLIC 
                         imgui 
                         ${GLFW_LIBRARIES} 
-                        glfw
                         GL
                 )
         endif()

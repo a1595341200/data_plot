@@ -10,7 +10,7 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/../../build_install)
 
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../build_install")
 find_package(imgui CONFIG REQUIRED)
-find_package(glfw3 CONFIG REQUIRED)
+# find_package(glfw3 CONFIG REQUIRED)
 if(imgui_FOUND)
     message(STATUS "imgui found")
 else()
@@ -19,7 +19,8 @@ endif()
 file(GLOB root_header_files "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 file(GLOB root_src_files "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
-add_library(${PROJECT_N} SHARED ${root_header_files} ${root_src_files})
+add_library(${PROJECT_N} ${root_header_files} ${root_src_files})
+# add_library(${PROJECT_N} SHARED ${root_header_files} ${root_src_files})
 
 
 target_include_directories(${PROJECT_N}
@@ -31,7 +32,7 @@ target_include_directories(${PROJECT_N}
 target_link_libraries(${PROJECT_N} 
     PUBLIC 
     imgui::imgui 
-    glfw
+    # glfw
 )
 
 install(TARGETS ${PROJECT_N} 

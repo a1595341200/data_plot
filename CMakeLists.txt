@@ -14,9 +14,10 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
 find_package(imgui CONFIG REQUIRED)
 find_package(implot CONFIG REQUIRED)
 find_package(app CONFIG REQUIRED)
+# find_package(glfw3 CONFIG REQUIRED)
 
 add_executable(plotdemo 
     main.cpp 
 )
-target_link_libraries(plotdemo app::app)
+target_link_libraries(plotdemo PUBLIC app::app)
 target_compile_features(plotdemo PRIVATE cxx_std_17)

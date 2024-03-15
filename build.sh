@@ -1,9 +1,8 @@
-cd imgui
 ###
  # @Author: error: git config user.name & please set dead value or install git 1595341200@qq.com
  # @Date: 2024-03-14 16:47:27
- # @LastEditors: error: git config user.name & please set dead value or install git 1595341200@qq.com
- # @LastEditTime: 2024-03-14 16:54:05
+ # @LastEditors: yao.xie 1595341200@qq.com
+ # @LastEditTime: 2024-03-15 09:43:41
  # @FilePath: /cplusplus/submodule/data_plot/build.sh
  # @Description: 
  # 
