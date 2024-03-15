@@ -7,6 +7,7 @@ project(${PROJECT_N} LANGUAGES CXX)
 # FetchContent_MakeAvailable(glfw)
 
 find_package(glfw3 CONFIG REQUIRED)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED  TRUE)

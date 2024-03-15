@@ -121,31 +121,35 @@ static void glfw_error_callback(int error, const char *description) {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-App::App(std::string title, int w, int h, int argc, char const *argv[]) {
-    cxxopts::Options options(title);
-    options.add_options()("v,vsync", "Disable V-Sync")("m,msaa", "Enable MSAA")(
-        "i,imgui", "Use Default ImGui Style")(
-        "w,width", "Window width override", cxxopts::value<int>())(
-        "h,height", "Window height override", cxxopts::value<int>())(
-        "g,gpu", "Use discrete GPU on hybrid laptops")("help", "Show Help");
+App::App(std::string title, int w, int h) {
+    // cxxopts::Options options(title);
+    // options.add_options()("v,vsync", "Disable V-Sync")("m,msaa", "Enable MSAA")(
+    //     "i,imgui", "Use Default ImGui Style")(
+    //     "w,width", "Window width override", cxxopts::value<int>())(
+    //     "h,height", "Window height override", cxxopts::value<int>())(
+    //     "g,gpu", "Use discrete GPU on hybrid laptops")("help", "Show Help");
 
-    auto result = options.parse(argc, argv);
-    if (result.count("help")) {
-        std::cout << options.help() << std::endl;
-        std::exit(0);
-    }
+    // auto result = options.parse(argc, argv);
+    // if (result.count("help")) {
+    //     std::cout << options.help() << std::endl;
+    //     std::exit(0);
+    // }
 
-    if (result.count("width"))
-        w = result["width"].as<int>();
-    if (result.count("height"))
-        h = result["height"].as<int>();
+    // if (result.count("width"))
+    //     w = result["width"].as<int>();
+    // if (result.count("height"))
+    //     h = result["height"].as<int>();
 
-    const bool no_vsync = result["vsync"].as<bool>();
-    const bool use_msaa = result["msaa"].as<bool>();
-    const bool im_style = result["imgui"].as<bool>();
+    // const bool no_vsync = result["vsync"].as<bool>();
+    // const bool use_msaa = result["msaa"].as<bool>();
+    // const bool im_style = result["imgui"].as<bool>();
+    const bool no_vsync = false;
+    const bool use_msaa = false;
+    const bool im_style = false;
     // NvOptimusEnablement = AmdPowerXpressRequestHighPerformance =
     // result["gpu"].as<bool>();
-    UsingDGPU = result["gpu"].as<bool>();
+    // UsingDGPU = result["gpu"].as<bool>();
+    UsingDGPU = false;
 
 #ifdef _DEBUG
     title += " - OpenGL - Debug";
