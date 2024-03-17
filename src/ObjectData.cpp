@@ -2,13 +2,14 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:11:33
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-15 17:02:32
+ * @LastEditTime: 2024-03-17 23:44:08
  * @FilePath: /cplusplus/submodule/data_plot/src/ObjectData.cpp
  * @Description:
  *
  * Copyright (c) 2024 by ${git_name_email}, All Rights Reserved.
  */
 #include "ObjectData.h"
+#include <iostream>
 
 ObjectData::ObjectData() {
     static int i = 0;

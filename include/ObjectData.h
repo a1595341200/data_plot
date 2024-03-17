@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:11:33
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-15 17:12:26
+ * @LastEditTime: 2024-03-17 23:00:12
  * @FilePath: /cplusplus/submodule/data_plot/include/ObjectData.h
  * @Description:
  *
@@ -16,7 +16,7 @@
 class ObjectData {
 public:
     int id{};
-    int subPlotId{};
+    int subPlotId{-1};
     int maxCount{1001};
     std::string label;
     ImVector<ImVec2> data;
