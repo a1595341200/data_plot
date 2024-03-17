@@ -56,7 +56,7 @@ install(FILES
 )
 
 install(DIRECTORY
-            ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glad/include/glad
+            ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glad/include/
             ${CMAKE_CURRENT_SOURCE_DIR}/common/Fonts
             DESTINATION include/app
 )
