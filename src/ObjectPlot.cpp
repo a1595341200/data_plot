@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:08:14
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-18 00:07:28
+ * @LastEditTime: 2024-03-18 10:24:21
  * @FilePath: /cplusplus/submodule/data_plot/src/ObjectPlot.cpp
  * @Description:
  *
@@ -21,95 +21,70 @@ void ObjectPlot::Update() {
 }
 
 void ObjectPlot::dragAndDropPlot() {
-    ImGui::BeginChild("DND_LEFT", ImVec2(100, 800));
-    if (ImGui::Button("Reset Data")) {
-        for (auto& obj : objs) {
-            obj.second.reset();
-        }
-    }
-    for (auto& obj : objs) {
-        if (obj.second.subPlotId > 0) {
-            continue;
-        }
-        ImPlot::ItemIcon(obj.second.color);
-        ImGui::SameLine();
-        ImGui::Selectable(obj.second.label.c_str(), false, 0, ImVec2(100, 0));
-        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
-            ImGui::SetDragDropPayload("MY_DND", &obj.first, sizeof(obj.first));
-            ImPlot::ItemIcon(obj.second.color);
-            ImGui::SameLine();
-            ImGui::TextUnformatted(obj.second.label.c_str());
-            ImGui::EndDragDropSource();
-        }
-    }
-    ImGui::EndChild();
-    if (ImGui::BeginDragDropTarget()) {
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MY_DND")) {
-            int i = *(int*)payload->Data;
-            objs[i].subPlotId = i;
-            objs[i].reset();
-        }
-        ImGui::EndDragDropTarget();
-    }
+    ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(600, 750), ImGuiCond_FirstUseEver);
+    std::vector<std::string> dnd_name{"DND_LEFT", "DND_TEST"};
 
-    ImGui::SameLine();
-    ImGui::BeginChild("DND_TEST", ImVec2(100, 800));
-    if (ImGui::Button("Reset Data")) {
+    for (auto& name : dnd_name) {
+        ImGui::BeginChild(name.c_str(), ImVec2(100, 800));
+        if (ImGui::Button("Reset Data")) {
+            for (auto& obj : objs) {
+                obj.second.reset();
+            }
+        }
         for (auto& obj : objs) {
-            obj.second.reset();
-        }
-    }
-    for (auto& obj : objs) {
-        if (obj.second.subPlotId > 0) {
-            continue;
-        }
-        ImPlot::ItemIcon(obj.second.color);
-        ImGui::SameLine();
-        ImGui::Selectable(obj.second.label.c_str(), false, 0, ImVec2(100, 0));
-        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
-            ImGui::SetDragDropPayload("MY_DND", &obj.first, sizeof(obj.first));
+            if (obj.second.subPlotId > 0) {
+                continue;
+            }
             ImPlot::ItemIcon(obj.second.color);
             ImGui::SameLine();
-            ImGui::TextUnformatted(obj.second.label.c_str());
-            ImGui::EndDragDropSource();
+            ImGui::Selectable(obj.second.label.c_str(), false, 0, ImVec2(100, 0));
+            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+                ImGui::SetDragDropPayload("MY_DND", &obj.first, sizeof(obj.first));
+                ImPlot::ItemIcon(obj.second.color);
+                ImGui::SameLine();
+                ImGui::TextUnformatted(obj.second.label.c_str());
+                ImGui::EndDragDropSource();
+            }
         }
-    }
-    ImGui::EndChild();
-    if (ImGui::BeginDragDropTarget()) {
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MY_DND")) {
-            int i = *(int*)payload->Data;
-            objs[i].subPlotId = i;
-            objs[i].reset();
+        ImGui::EndChild();
+        if (ImGui::BeginDragDropTarget()) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MY_DND")) {
+                int i = *(int*)payload->Data;
+                objs[i].subPlotId = i;
+                objs[i].reset();
+            }
+            ImGui::EndDragDropTarget();
         }
-        ImGui::EndDragDropTarget();
+
+        ImGui::SameLine();
     }
-    ImGui::SameLine();
-    // ImGui::EndChild();
 
     ImGui::BeginChild("DND_RIGHT", ImVec2(-1, -1));
     ImPlotAxisFlags flags = ImPlotAxisFlags_AutoFit;
 
     for (int i = 1; i <= 4; ++i) {
-        switch (i) {
-            case 1:
-                ImGui::SameLine();
-                break;
-            case 2:
-                ImGui::SameLine();
-                break;
-            case 3:
-                ImGui::NewLine();
-                break;
-            case 4:
-                ImGui::SameLine();
-                break;
+        ImGui::NewLine();
+        // switch (i) {
+        //     case 1:
+        //         ImGui::SameLine();
+        //         break;
+        //     case 2:
+        //         ImGui::SameLine();
+        //         break;
+        //     case 3:
+        //         ImGui::NewLine();
+        //         break;
+        //     case 4:
+        //         ImGui::SameLine();
+        //         break;
 
-            default:
-                break;
-        };
+        //     default:
+        //         break;
+        // };
 
         ImPlotAxisFlags flags = ImPlotAxisFlags_AutoFit;
-        if (ImPlot::BeginPlot(("##DND" + std::to_string(i)).c_str(), ImVec2(400, 200))) {
+        if (ImPlot::BeginPlot(("##DND" + std::to_string(i)).c_str(), ImVec2(-1, 200))) {
             ImPlot::SetupAxis(ImAxis_X1, nullptr, ImPlotAxisFlags_AutoFit);
             ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit);
             ImPlot::SetupAxes("x", "y");
