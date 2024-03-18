@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:08:14
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-18 10:24:21
+ * @LastEditTime: 2024-03-18 10:31:21
  * @FilePath: /cplusplus/submodule/data_plot/src/ObjectPlot.cpp
  * @Description:
  *
@@ -65,24 +65,6 @@ void ObjectPlot::dragAndDropPlot() {
 
     for (int i = 1; i <= 4; ++i) {
         ImGui::NewLine();
-        // switch (i) {
-        //     case 1:
-        //         ImGui::SameLine();
-        //         break;
-        //     case 2:
-        //         ImGui::SameLine();
-        //         break;
-        //     case 3:
-        //         ImGui::NewLine();
-        //         break;
-        //     case 4:
-        //         ImGui::SameLine();
-        //         break;
-
-        //     default:
-        //         break;
-        // };
-
         ImPlotAxisFlags flags = ImPlotAxisFlags_AutoFit;
         if (ImPlot::BeginPlot(("##DND" + std::to_string(i)).c_str(), ImVec2(-1, 200))) {
             ImPlot::SetupAxis(ImAxis_X1, nullptr, ImPlotAxisFlags_AutoFit);
