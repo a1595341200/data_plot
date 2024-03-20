@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:11:33
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-19 13:11:27
+ * @LastEditTime: 2024-03-20 14:23:12
  * @FilePath: /cplusplus/submodule/data_plot/src/ObjectData.cpp
  * @Description:
  *
@@ -13,14 +13,14 @@
 #include <iostream>
 
 ObjectData::ObjectData() {
-    data.resize(MAX);
+  data.resize(MAX);
 }
 ObjectData::ObjectData(int _id, const std::string& _label, int _maxCount)
     : id(_id), label(_label), maxCount(_maxCount) {
-    data.resize(MAX);
+  data.resize(MAX);
 }
 void ObjectData::reset() {
-    subPlotId = -1;
-    data.clear();
-    data.resize(MAX);
+  subPlotId = -1;
+  data.clear();
+  data.resize(MAX);
 }

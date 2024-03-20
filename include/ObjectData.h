@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:11:33
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-19 13:26:51
+ * @LastEditTime: 2024-03-20 14:23:03
  * @FilePath: /cplusplus/submodule/data_plot/include/ObjectData.h
  * @Description:
  *
@@ -10,14 +10,14 @@
  */
 #pragma once
 #include <string>
-#include <vector>
 
 #include "Helpers.h"
 #include "implot.h"
+#include <vector>
 
 class ObjectData {
 public:
-    enum { X, Y, VX, VY, MAX };
+    enum { X, Y, VX, VY, CLASSPROB, RADAR_ID, CAMERA_ID,MAX };
 
     int id{};
     int subPlotId{-1};
@@ -28,5 +28,4 @@ public:
     ObjectData();
     ObjectData(int _id, const std::string& _label, int _maxCount = 100);
     void reset();
-    int scene{};
 };
