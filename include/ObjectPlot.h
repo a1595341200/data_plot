@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:08:14
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-20 14:29:06
+ * @LastEditTime: 2024-03-22 15:57:37
  * @FilePath: /cplusplus/submodule/data_plot/include/ObjectPlot.h
  * @Description:
  *
@@ -37,7 +37,7 @@ struct ObjectPlot : App {
 
     void dragAndDropPlot();
     void dragClassProb();
-
+    void dragBev();
     template <typename T>
     void plot(
         T* front_cam_obj, T* front_radar_obj, const T& output, T* const side_cam_obj,

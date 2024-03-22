@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:08:14
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-20 14:29:44
+ * @LastEditTime: 2024-03-22 17:15:23
  * @FilePath: /cplusplus/submodule/data_plot/src/ObjectPlot.cpp
  * @Description:
  *
@@ -75,8 +75,7 @@ std::unique_ptr<ObjectPlot> ObjectPlot::objPlotPtr = nullptr;
 template <typename T>
 void ObjectPlot::convertData(
     std::unordered_map<std::string, std::map<int, ObjectData>>& objs, const std::string& name,
-    T* objList) {
-}
+    T* objList) {}
 
 void ObjectPlot::startPLot() {
     std::thread t([&] {
@@ -95,6 +94,10 @@ void ObjectPlot::Update() {
     }
     if (ImGui::TreeNode("ClassProb")) {
         dragClassProb();
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNode("Bev")) {
+        dragBev();
         ImGui::TreePop();
     }
 }
@@ -318,6 +321,22 @@ void ObjectPlot::dragClassProb() {
     });
 }
 
+void ObjectPlot::dragBev() {
+    ImPlot::SetNextAxisLimits(ImAxis_X1, -60, 200);
+    ImPlot::SetNextAxisLimits(ImAxis_Y1, -40, 40);
+    if (ImPlot::BeginPlot("##CustomRend", ImVec2(-1, 900))) {
+        static float i = 1;
+        ImVec2 rmin = ImPlot::PlotToPixels(ImPlotPoint(2.5f + i, 7.5f));
+        ImVec2 rmax = ImPlot::PlotToPixels(ImPlotPoint(7.5f + i, 2.5f));
+        ImPlot::PushPlotClipRect();
+        ImPlot::GetPlotDrawList()->AddRect(rmin, rmax, IM_COL32(128, 0, 255, 255));
+        ImPlot::PlotText("Vertical Text", 2.5f + i, 7.5f, ImVec2(0, 0));
+        ImPlot::PopPlotClipRect();
+        i += 1;
+        ImPlot::EndPlot();
+    }
+}
+
 template <typename T>
 void ObjectPlot::plot(
     T* front_cam_obj, T* front_radar_obj, const T& output, T* const side_cam_obj, T* fl_radar_obj,
@@ -339,8 +358,7 @@ void ObjectPlot::addCamera(T* front_cam_obj) {
 }
 
 template <typename T>
-void ObjectPlot::addFusion(const T& output) {
-}
+void ObjectPlot::addFusion(const T& output) {}
 
 template <typename T>
 void ObjectPlot::addRadar(T* front_radar_obj) {
