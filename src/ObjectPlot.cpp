@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:08:14
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-22 17:15:23
+ * @LastEditTime: 2024-03-29 17:41:17
  * @FilePath: /cplusplus/submodule/data_plot/src/ObjectPlot.cpp
  * @Description:
  *
@@ -100,6 +100,83 @@ void ObjectPlot::Update() {
         dragBev();
         ImGui::TreePop();
     }
+    if (ImGui::TreeNode("test")) {
+        ImVector<char*> Items;
+        bool ScrollToBottom;
+        bool AutoScroll;
+        char InputBuf[256];
+
+        if (ImGui::BeginChild(
+                "ScrollingRegion", ImVec2(0, -footer_height_to_reserve), ImGuiChildFlags_None,
+                ImGuiWindowFlags_HorizontalScrollbar)) {
+            if (ImGui::BeginPopupContextWindow()) {
+                if (ImGui::Selectable("Clear"))
+                    ClearLog();
+                ImGui::EndPopup();
+            }
+
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));  // Tighten spacing
+
+            for (const char* item : Items) {
+                if (!Filter.PassFilter(item))
+                    continue;
+
+                // Normally you would store more information in your item than just a string.
+                // (e.g. make Items[] an array of structure, store color/type etc.)
+                ImVec4 color;
+                bool has_color = false;
+                if (strstr(item, "[error]")) {
+                    color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
+                    has_color = true;
+                } else if (strncmp(item, "# ", 2) == 0) {
+                    color = ImVec4(1.0f, 0.8f, 0.6f, 1.0f);
+                    has_color = true;
+                }
+                if (has_color)
+                    ImGui::PushStyleColor(ImGuiCol_Text, color);
+                ImGui::TextUnformatted(item);
+                if (has_color)
+                    ImGui::PopStyleColor();
+            }
+
+            // Keep up at the bottom of the scroll region if we were already at the bottom at the
+            // beginning of the frame. Using a scrollbar or mouse-wheel will take away from the
+            // bottom edge.
+            if (ScrollToBottom || (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()))
+                ImGui::SetScrollHereY(1.0f);
+            ScrollToBottom = false;
+
+            ImGui::PopStyleVar();
+        }
+        ImGui::EndChild();
+        ImGui::Separator();
+
+        // Command-line
+        bool reclaim_focus = false;
+        ImGuiInputTextFlags input_text_flags =
+            ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
+            ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+        // if (ImGui::InputText(
+        //         "Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &TextEditCallbackStub,
+        //         (void*)this)) {
+        //     char* s = InputBuf;
+        //     Strtrim(s);
+        //     if (s[0])
+        //         ExecCommand(s);
+        //     strcpy(s, "");
+        //     reclaim_focus = true;
+        // }
+
+        // Auto-focus on window apparition
+        ImGui::SetItemDefaultFocus();
+        if (reclaim_focus)
+            ImGui::SetKeyboardFocusHere(-1);  // Auto focus previous widget
+
+        ImGui::End();
+    }
+}
+ImGui::EndChild();
+}
 }
 
 void ObjectPlot::dragAndDropPlot() {
@@ -123,7 +200,7 @@ void ObjectPlot::dragAndDropPlot() {
         ImGui::SameLine();
         ImGui::Checkbox("show camera id", &show_camera_id);
         ImGui::SameLine();
-        for (int i = 1; i <= 6; ++i) {
+        for (int i = 1; i <= 7; ++i) {
             switch (i) {
                 case 1:
                     if (!show_x) {
@@ -322,17 +399,10 @@ void ObjectPlot::dragClassProb() {
 }
 
 void ObjectPlot::dragBev() {
-    ImPlot::SetNextAxisLimits(ImAxis_X1, -60, 200);
-    ImPlot::SetNextAxisLimits(ImAxis_Y1, -40, 40);
+    // ImPlot::SetNextAxisLimits(ImAxis_X1, -60, 200);
+    // ImPlot::SetNextAxisLimits(ImAxis_Y1, -40, 40);
     if (ImPlot::BeginPlot("##CustomRend", ImVec2(-1, 900))) {
-        static float i = 1;
-        ImVec2 rmin = ImPlot::PlotToPixels(ImPlotPoint(2.5f + i, 7.5f));
-        ImVec2 rmax = ImPlot::PlotToPixels(ImPlotPoint(7.5f + i, 2.5f));
-        ImPlot::PushPlotClipRect();
-        ImPlot::GetPlotDrawList()->AddRect(rmin, rmax, IM_COL32(128, 0, 255, 255));
-        ImPlot::PlotText("Vertical Text", 2.5f + i, 7.5f, ImVec2(0, 0));
-        ImPlot::PopPlotClipRect();
-        i += 1;
+        plotSelf();
         ImPlot::EndPlot();
     }
 }
@@ -388,4 +458,52 @@ void ObjectPlot::addrl_radar(T* rl_radar_obj) {
 template <typename T>
 void ObjectPlot::addrr_radar(T* rr_rdara_obj) {
     convertData(objs, "DND_RR_RADAR", rr_rdara_obj);
+}
+
+void ObjectPlot::plotSelf() {
+    auto points = rotatedRect(-1.15, 0, 2.425, 0.96, 1, 1);
+    ImPlot::SetNextLineStyle(ImVec4(255, 0, 0, 255), 4.0);
+    ImPlot::PlotLine("", &points[0].x, &points[0].y, 5, 0, 0, 2 * sizeof(float));
+}
+
+void ObjectPlot::plotRect(
+    float x, float y, float heading, float length, float width, float height, int nearSide) {
+    std::vector<ImVec2> points;
+    points.emplace_back(-1.15, 0.96);
+    points.emplace_back(3.7, 0.96);
+    points.emplace_back(3.7, -0.96);
+    points.emplace_back(-1.15, -0.96);
+    points.emplace_back(-1.15, 0.96);
+    ImPlot::SetNextLineStyle(ImVec4(255, 0, 0, 255), 4.0);
+    ImPlot::PlotLine("", &points[0].x, &points[0].y, 5, 0, 0, 2 * sizeof(float));
+}
+
+std::vector<ImVec2> ObjectPlot::rotatedRect(
+    double x, double y, double half_length, double half_width, double angle, uint8_t nearest_side) {
+    double c = cos(angle);
+    double s = sin(angle);
+    if (nearest_side == 0) {
+    } else if (nearest_side == 1) {
+        x = x + half_length * c;
+        y = y + half_length * s;
+    } else if (nearest_side == 2) {
+        x = x - half_length * c;
+        y = y - half_length * s;
+    } else if (nearest_side == 3) {
+        x = x - half_width * s;
+        y = y + half_width * c;
+    } else if (nearest_side == 4) {
+        x = x + half_width * s;
+        y = y - half_width * c;
+    }
+    double r1x = -half_length * c - half_width * s;
+    double r1y = -half_length * s + half_width * c;
+    double r2x = half_length * c - half_width * s;
+    double r2y = half_length * s + half_width * c;
+    return {
+        {x + r1x, y + r1y},
+        {x + r2x, y + r2y},
+        {x - r1x, y - r1y},
+        {x - r2x, y - r2y},
+        {x + r1x, y + r1y}};
 }

@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:08:14
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-22 15:57:37
+ * @LastEditTime: 2024-03-29 15:11:56
  * @FilePath: /cplusplus/submodule/data_plot/include/ObjectPlot.h
  * @Description:
  *
@@ -70,6 +70,14 @@ struct ObjectPlot : App {
 
     template <typename T>
     void addrr_radar(T* rr_rdara_obj);
+
+    void plotSelf();
+
+    void plotRect(float x, float y, float heading, float length, float width, float height, int nearSide);
+
+     std::vector<ImVec2> rotatedRect(
+        double x, double y, double half_length, double half_width, double angle,
+        uint8_t nearest_side = 0);
 
     std::vector<std::pair<int, std::string>> dnd_name{
         {FRONT, "DND_FRONT_CAMERA"}, {FRONT, "DND_FRONT_RADAR"}, {SIDE, "DND_SIDE_CAMERA"},
