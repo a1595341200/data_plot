@@ -29,6 +29,7 @@ add_executable(plotdemo1
     plotdemo1.cpp 
     src/ObjectData.cpp
     src/ObjectPlot.cpp
+    src/AppLog.cpp
 )
 target_link_libraries(plotdemo1 PUBLIC app::app)
 target_compile_features(plotdemo1 PRIVATE cxx_std_17)

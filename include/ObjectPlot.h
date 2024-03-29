@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:08:14
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-29 15:11:56
+ * @LastEditTime: 2024-03-29 22:37:20
  * @FilePath: /cplusplus/submodule/data_plot/include/ObjectPlot.h
  * @Description:
  *
@@ -35,9 +35,9 @@ struct ObjectPlot : App {
 
     void Update() override;
 
-    void dragAndDropPlot();
-    void dragClassProb();
-    void dragBev();
+    void dragAndDropPlot(bool* open);
+    void dragClassProb(bool* open);
+    void dragBev(bool* open);
     template <typename T>
     void plot(
         T* front_cam_obj, T* front_radar_obj, const T& output, T* const side_cam_obj,
@@ -73,9 +73,10 @@ struct ObjectPlot : App {
 
     void plotSelf();
 
-    void plotRect(float x, float y, float heading, float length, float width, float height, int nearSide);
+    void plotRect(
+        float x, float y, float heading, float length, float width, float height, int nearSide);
 
-     std::vector<ImVec2> rotatedRect(
+    std::vector<ImVec2> rotatedRect(
         double x, double y, double half_length, double half_width, double angle,
         uint8_t nearest_side = 0);
 
