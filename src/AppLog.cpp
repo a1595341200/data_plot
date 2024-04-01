@@ -10,7 +10,7 @@ void AppLog::Clear() {
     LineOffsets.push_back(0);
 }
 
-void AppLog::AddLog(const char* fmt, ...) IM_FMTARGS(2) {
+void AppLog::AddLog(const char* fmt, ...) {
     int old_size = Buf.size();
     va_list args;
     va_start(args, fmt);
