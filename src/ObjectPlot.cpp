@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:08:14
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-29 22:52:28
+ * @LastEditTime: 2024-04-02 15:20:48
  * @FilePath: /cplusplus/submodule/data_plot/src/ObjectPlot.cpp
  * @Description:
  *
@@ -16,45 +16,43 @@
 
 ObjectPlot::ObjectPlot(std::string title, int w, int h) : App(title, w, h) {
     basePlot = [&](std::function<void()> func) {
-        static int e = FRONT;
-        ImGui::RadioButton("front", &e, FRONT);
-        ImGui::SameLine();
-        ImGui::RadioButton("side", &e, SIDE);
         if (ImGui::Button("Reset Data")) {
             objs.clear();
         }
-
-        for (auto& sceneName : dnd_name) {
-            int& scene = sceneName.first;
-            std::string& name = sceneName.second;
-            if (scene != e && scene != ALWAYS) {
+        ImGui::NewLine();
+        for (auto& sceneName : mDndNameMap) {
+            ImGui::SameLine();
+            ImGui::Checkbox(sceneName.second.realName.c_str(), &sceneName.second.show);
+        }
+        ImGui::Separator();
+        for (auto& objPlot : mObjPlotMap) {
+            ImGui::SameLine();
+            ImGui::Checkbox(objPlot.second.yLabel.c_str(), &objPlot.second.show);
+        }
+        ImGui::Separator();
+        for (auto& sceneName : mDndNameMap) {
+            std::string& name = sceneName.second.dndName;
+            if (!sceneName.second.show) {
                 continue;
             }
-
-            if (ImGui::BeginChild(name.c_str(), ImVec2(120, 1080))) {
-                // ImGui::BeginChild(name.c_str());
-                for (auto& obj : objs[name]) {
-                    if (obj.second.subPlotId != -1) {
-                        continue;
-                    }
+            ImGui::BeginChild(name.c_str(), ImVec2(200, 1080));
+            for (auto& obj : objs[sceneName.first]) {
+                if (obj.second.subPlotId != -1) {
+                    continue;
+                }
+                ImPlot::ItemIcon(obj.second.color);
+                ImGui::SameLine();
+                ImGui::Selectable(obj.second.label.c_str(), false, 0, ImVec2(180, 0));
+                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+                    PlotIndex index{sceneName.first, obj.first};
+                    ImGui::SetDragDropPayload("MY_DND", &index, sizeof(PlotIndex));
                     ImPlot::ItemIcon(obj.second.color);
                     ImGui::SameLine();
-                    ImGui::Selectable(obj.second.label.c_str(), false, 0, ImVec2(120, 0));
-                    // ImGui::Selectable(obj.second.label.c_str(), false, 0);
-                    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
-                        PlotIndex index{"", obj.first};
-                        strcpy(index.name, name.c_str());
-                        ImGui::SetDragDropPayload("MY_DND", &index, sizeof(PlotIndex));
-                        ImPlot::ItemIcon(obj.second.color);
-                        ImGui::SameLine();
-                        ImGui::TextUnformatted(obj.second.label.c_str());
-                        ImGui::EndDragDropSource();
-                    }
+                    ImGui::TextUnformatted(obj.second.label.c_str());
+                    ImGui::EndDragDropSource();
                 }
             }
-
             ImGui::EndChild();
-
             if (ImGui::BeginDragDropTarget()) {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MY_DND")) {
                     auto tmp = *(PlotIndex*)payload->Data;
@@ -65,10 +63,7 @@ ObjectPlot::ObjectPlot(std::string title, int w, int h) : App(title, w, h) {
 
             ImGui::SameLine();
         }
-
-        // ImGui::BeginChild("DND_RIGHT", ImVec2(-1, -1));
-
-        if (ImGui::BeginChild("DND_RIGHT")) {
+        if (ImGui::BeginChild("DND_RIGHT", ImVec2(-1, 2400))) {
             func();
         }
         ImGui::EndChild();
@@ -86,6 +81,7 @@ void ObjectPlot::startPLot() {
     std::thread t([&] {
         std::this_thread::sleep_for(std::chrono::seconds(2));
         objPlotPtr = std::make_unique<ObjectPlot>("Object Plot", 1920, 1080);
+        objPlotPtr->init();
         objPlotPtr->Run();
     });
     t.detach();
@@ -97,7 +93,7 @@ void ObjectPlot::Update() {
     static bool show_Bev{};
     static bool show_Test{};
     static bool show_MenuBar = true;
-    ImGui::SetWindowSize(ImVec2(900, 900));
+    ImGui::SetNextWindowSize(ImVec2(1763, 900), ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Example: Simple layout", &show_MenuBar, ImGuiWindowFlags_MenuBar)) {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("plot")) {
@@ -125,13 +121,8 @@ void ObjectPlot::Update() {
         }
         if (show_Test) {
             static AppLog log;
-            // For the demo: add a debug button _BEFORE_ the normal log window contents
-            // We take advantage of a rarely used feature: multiple calls to Begin()/End() are
-            // appending to the _same_ window. Most of the contents of the window will be added by
-            // the log.Draw() call.
             ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
             ImGui::Begin("Log", &show_Test);
-            // IMGUI_DEMO_MARKER("Examples/Log");
             if (ImGui::SmallButton("[Debug] Add 5 entries")) {
                 static int counter = 0;
                 const char* categories[3] = {"info", "warn", "error"};
@@ -149,172 +140,39 @@ void ObjectPlot::Update() {
             }
             ImGui::End();
 
-            // Actually call in the regular Log helper (which will Begin() into the same window as
-            // we just did)
-            // static bool show_Test1 = true;
             log.Draw("Log", &show_Test);
         }
     }
     ImGui::End();
-    // ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    // if (ImGui::TreeNode("StateX")) {
-    //     dragAndDropPlot();
-    //     ImGui::TreePop();
-    // }
-    // if (ImGui::TreeNode("ClassProb")) {
-    //     dragClassProb();
-    //     ImGui::TreePop();
-    // }
-    // if (ImGui::TreeNode("Bev")) {
-    //     dragBev();
-    //     ImGui::TreePop();
-    // }
-    if ("test") {
-    }
 }
 
 void ObjectPlot::dragAndDropPlot(bool* open) {
+    ImGui::SetNextWindowSize(ImVec2(1531, 889), ImGuiCond_FirstUseEver);
     if (ImGui::Begin("dragAndDropPlot", open, 0)) {
         basePlot([&]() {
-            static bool show_x = true;
-            static bool show_y = true;
-            static bool show_vx = true;
-            static bool show_vy = true;
-            static bool show_radar_id = true;
-            static bool show_camera_id = true;
-            ImGui::SameLine();
-            ImGui::Checkbox("show x", &show_x);
-            ImGui::SameLine();
-            ImGui::Checkbox("show y", &show_y);
-            ImGui::SameLine();
-            ImGui::Checkbox("show vx", &show_vx);
-            ImGui::SameLine();
-            ImGui::Checkbox("show vy", &show_vy);
-            ImGui::SameLine();
-            ImGui::Checkbox("show radar id", &show_radar_id);
-            ImGui::SameLine();
-            ImGui::Checkbox("show camera id", &show_camera_id);
-            ImGui::SameLine();
-            for (int i = 1; i <= 7; ++i) {
-                switch (i) {
-                    case 1:
-                        if (!show_x) {
-                            continue;
-                        };
-                        break;
-                    case 2:
-                        if (!show_y) {
-                            continue;
-                        };
-                        break;
-                    case 3:
-                        if (!show_vx) {
-                            continue;
-                        };
-                        break;
-                    case 4:
-                        if (!show_vy) {
-                            continue;
-                        };
-                    case 5:
-                        if (!show_camera_id) {
-                            continue;
-                        };
-                    case 6:
-                        if (!show_radar_id) {
-                            continue;
-                        };
-                        break;
-                    default:
-                        break;
+            for (auto& objPlot : mObjPlotMap) {
+                if (!objPlot.second.show) {
+                    continue;
                 }
                 ImGui::NewLine();
-                // if (ImPlot::BeginPlot(("##DND" + std::to_string(i)).c_str(), ImVec2(-1, 200))) {
-                if (ImPlot::BeginPlot(("##DND" + std::to_string(i)).c_str())) {
+                if (ImPlot::BeginPlot(("##DND" + std::to_string(objPlot.first)).c_str())) {
                     static double min{INT_MAX};
                     min = std::min(min, time);
-                    switch (i) {
-                        case 1:
-                            ImPlot::SetupAxes("time", "x");
-                            break;
-                        case 2:
-                            ImPlot::SetupAxes("time", "y");
-                            break;
-                        case 3:
-                            ImPlot::SetupAxes("time", "vx");
-                            break;
-                        case 4:
-                            ImPlot::SetupAxes("time", "vy");
-                            break;
-                        case 5:
-                            ImPlot::SetupAxes("time", "camera id");
-                            break;
-                        case 6:
-                            ImPlot::SetupAxes("time", "radar id");
-                            break;
-                        default:
-                            break;
-                    }
+                    ImPlot::SetupAxes("time", objPlot.second.yLabel.c_str());
+
                     for (auto& list : objs) {
                         for (auto& obj : list.second) {
                             if (obj.second.subPlotId != -1 &&
                                 obj.second.data[ObjectData::X].size() > 0) {
                                 ImPlot::SetNextLineStyle(obj.second.color, 4.0);
-                                switch (i) {
-                                    case 1:
-                                        ImPlot::PlotLine(
-                                            obj.second.label.c_str(),
-                                            &obj.second.data[ObjectData::X][0].x,
-                                            &obj.second.data[ObjectData::X][0].y,
-                                            obj.second.data[ObjectData::X].size(), 0, 0,
-                                            2 * sizeof(float));
-                                        break;
-                                    case 2:
-                                        ImPlot::PlotLine(
-                                            obj.second.label.c_str(),
-                                            &obj.second.data[ObjectData::Y][0].x,
-                                            &obj.second.data[ObjectData::Y][0].y,
-                                            obj.second.data[ObjectData::Y].size(), 0, 0,
-                                            2 * sizeof(float));
-                                        break;
-                                    case 3:
-                                        ImPlot::PlotLine(
-                                            obj.second.label.c_str(),
-                                            &obj.second.data[ObjectData::VX][0].x,
-                                            &obj.second.data[ObjectData::VX][0].y,
-                                            obj.second.data[ObjectData::VX].size(), 0, 0,
-                                            2 * sizeof(float));
-                                        break;
-                                    case 4:
-                                        ImPlot::PlotLine(
-                                            obj.second.label.c_str(),
-                                            &obj.second.data[ObjectData::VY][0].x,
-                                            &obj.second.data[ObjectData::VY][0].y,
-                                            obj.second.data[ObjectData::VY].size(), 0, 0,
-                                            2 * sizeof(float));
-                                        break;
-                                    case 5:
-                                        ImPlot::PlotLine(
-                                            obj.second.label.c_str(),
-                                            &obj.second.data[ObjectData::CAMERA_ID][0].x,
-                                            &obj.second.data[ObjectData::CAMERA_ID][0].y,
-                                            obj.second.data[ObjectData::CAMERA_ID].size(), 0, 0,
-                                            2 * sizeof(float));
-                                        break;
-                                    case 6:
-                                        ImPlot::PlotLine(
-                                            obj.second.label.c_str(),
-                                            &obj.second.data[ObjectData::RADAR_ID][0].x,
-                                            &obj.second.data[ObjectData::RADAR_ID][0].y,
-                                            obj.second.data[ObjectData::RADAR_ID].size(), 0, 0,
-                                            2 * sizeof(float));
-                                        break;
-                                    default:
-                                        break;
-                                }
+                                std::vector<ImVec2>& data = obj.second.data[objPlot.first];
+
+                                ImPlot::PlotLine(
+                                    obj.second.label.c_str(), &data[0].x, &data[0].y, data.size(),
+                                    0, 0, 2 * sizeof(float));
+
                                 if (ImPlot::BeginDragDropSourceItem(obj.second.label.c_str())) {
-                                    PlotIndex index{"", obj.first};
-                                    strcpy(index.name, list.first.c_str());
+                                    PlotIndex index{list.first, obj.first};
                                     ImGui::SetDragDropPayload("MY_DND", &index, sizeof(PlotIndex));
                                     ImPlot::ItemIcon(obj.second.color);
                                     ImGui::SameLine();
@@ -369,8 +227,7 @@ void ObjectPlot::dragClassProb(bool* open) {
                                 obj.second.data[ObjectData::CLASSPROB].size(), 0, 0,
                                 2 * sizeof(float));
                             if (ImPlot::BeginDragDropSourceItem(obj.second.label.c_str())) {
-                                PlotIndex index{"", obj.first};
-                                strcpy(index.name, list.first.c_str());
+                                PlotIndex index{list.first, obj.first};
                                 ImGui::SetDragDropPayload("MY_DND", &index, sizeof(PlotIndex));
                                 ImPlot::ItemIcon(obj.second.color);
                                 ImGui::SameLine();
@@ -514,4 +371,10 @@ std::vector<ImVec2> ObjectPlot::rotatedRect(
     return {
         ImVec2(x + r1x, y + r1y), ImVec2(x + r2x, y + r2y), ImVec2(x - r1x, y - r1y),
         ImVec2(x - r2x, y - r2y), ImVec2(x + r1x, y + r1y)};
+}
+
+void ObjectPlot::init() {
+    for (size_t i = 0; i < ObjectData::MAX; ++i) {
+        mObjPlotMap.emplace(i, ObjPlotSelect{ObjectData::id2yLabel[i], false});
+    }
 }

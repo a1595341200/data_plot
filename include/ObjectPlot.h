@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:08:14
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-29 22:37:20
+ * @LastEditTime: 2024-04-02 14:54:06
  * @FilePath: /cplusplus/submodule/data_plot/include/ObjectPlot.h
  * @Description:
  *
@@ -16,11 +16,33 @@
 #include "App.h"
 #include "ObjectData.h"
 
+struct DndName {
+    std::string dndName;
+    std::string realName;
+    bool show{};
+};
+
+struct ObjPlotSelect {
+    std::string yLabel;
+    bool show;
+};
+
 struct ObjectPlot : App {
-    enum { FRONT_CAMERA, FRONT_RADAR, FUSION, MAX };
+    enum {
+        FRONT_CAMERA,
+        FRONT_RADAR,
+        FUSION,
+        EGOMOTION,
+        FL_RADAR,
+        FR_RADAR,
+        RL_RADAR,
+        RR_RADAR,
+        SIDE_CAMERA,
+        MAX
+    };
     enum { FRONT, SIDE, ALWAYS, MAX_PLOT };
     struct PlotIndex {
-        char name[64]{};
+        uint64_t name{};
         int id{-1};
     };
     using App::App;
@@ -34,7 +56,7 @@ struct ObjectPlot : App {
     static void startPLot();
 
     void Update() override;
-
+    void init();
     void dragAndDropPlot(bool* open);
     void dragClassProb(bool* open);
     void dragBev(bool* open);
@@ -80,22 +102,22 @@ struct ObjectPlot : App {
         double x, double y, double half_length, double half_width, double angle,
         uint8_t nearest_side = 0);
 
-    std::vector<std::pair<int, std::string>> dnd_name{
-        {FRONT, "DND_FRONT_CAMERA"}, {FRONT, "DND_FRONT_RADAR"}, {SIDE, "DND_SIDE_CAMERA"},
-        {SIDE, "DND_FL_RADAR"},      {SIDE, "DND_FR_RADAR"},     {SIDE, "DND_RL_RADAR"},
-        {SIDE, "DND_RR_RADAR"},      {ALWAYS, "DND_FUSION"}};
-
     int count{0};
 
-    std::unordered_map<std::string, std::map<int, ObjectData>> objs;
+    std::unordered_map<uint64_t, std::map<int, ObjectData>> objs;
 
     double time{INT_MAX};
 
     static std::unique_ptr<ObjectPlot> objPlotPtr;
-    std::unordered_map<std::string, std::string> dndNameToRealName{
-        {"DND_FRONT_CAMERA", "camera"}, {"DND_FRONT_RADAR", "radar"},
-        {"DND_FUSION", "fusion"},       {"DND_SIDE_CAMERA", "side_camera"},
-        {"DND_FL_RADAR", "fl_radar"},   {"DND_FR_RADAR", "fr_radar"},
-        {"DND_RL_RADAR", "rl_radar"},   {"DND_RR_RADAR", "rr_radar"}};
     std::function<void(std::function<void()> func)> basePlot;
+    std::unordered_map<uint64_t, DndName> mDndNameMap{
+        {FRONT_CAMERA, {"DND_FRONT_CAMERA", "camera", false}},
+        {FRONT_RADAR, {"DND_FRONT_RADAR", "radar", false}},
+        {SIDE_CAMERA, {"DND_SIDE_CAMERA", "side_camera", false}},
+        {FL_RADAR, {"DND_FL_RADAR", "fl_radar", false}},
+        {FR_RADAR, {"DND_FR_RADAR", "fr_radar", false}},
+        {RL_RADAR, {"DND_RL_RADAR", "rl_radar", false}},
+        {RR_RADAR, {"DND_RR_RADAR", "rr_radar", false}},
+        {FUSION, {"DND_FUSION", "fusion", true}}};
+    std::unordered_map<uint64_t, ObjPlotSelect> mObjPlotMap;
 };

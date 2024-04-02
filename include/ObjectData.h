@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:11:33
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-03-20 14:23:03
+ * @LastEditTime: 2024-04-02 15:00:31
  * @FilePath: /cplusplus/submodule/data_plot/include/ObjectData.h
  * @Description:
  *
@@ -10,14 +10,15 @@
  */
 #pragma once
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "Helpers.h"
 #include "implot.h"
-#include <vector>
 
 class ObjectData {
 public:
-    enum { X, Y, VX, VY, CLASSPROB, RADAR_ID, CAMERA_ID,MAX };
+    enum : uint64_t { X, Y, VX, VY, CLASSPROB, RADAR_ID, CAMERA_ID, MAX };
 
     int id{};
     int subPlotId{-1};
@@ -28,4 +29,12 @@ public:
     ObjectData();
     ObjectData(int _id, const std::string& _label, int _maxCount = 100);
     void reset();
+    inline static std::unordered_map<int64_t, std::string> id2yLabel{
+        {X, "x"},
+        {Y, "y"},
+        {VX, "vx"},
+        {VY, "vy"},
+        {CLASSPROB, "class prob"},
+        {RADAR_ID, "radar id"},
+        {CAMERA_ID, "camera id"}};
 };
