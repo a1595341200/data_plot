@@ -34,6 +34,7 @@ target_link_libraries(${PROJECT_N}
     PUBLIC 
     imgui::imgui 
     # glfw
+    ${CMAKE_DL_LIBS}
 )
 
 install(TARGETS ${PROJECT_N} 

@@ -48,6 +48,7 @@ target_link_libraries(${PROJECT_N}
         ${PRJ_LIBRARIES}
         # ${GLFW_LIBRARIES} glfw GL
         glfw
+        ${CMAKE_DL_LIBS}
 )
 
 install(TARGETS ${PROJECT_N} 

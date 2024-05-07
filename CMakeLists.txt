@@ -18,7 +18,7 @@ find_package(app CONFIG REQUIRED)
 add_executable(plotdemo 
     plotdemo.cpp 
 )
-target_link_libraries(plotdemo PUBLIC app::app)
+target_link_libraries(plotdemo PUBLIC app::app ${CMAKE_DL_LIBS})
 target_compile_features(plotdemo PRIVATE cxx_std_17)
 
 include_directories(
@@ -31,5 +31,5 @@ add_executable(plotdemo1
     src/ObjectPlot.cpp
     src/AppLog.cpp
 )
-target_link_libraries(plotdemo1 PUBLIC app::app)
+target_link_libraries(plotdemo1 PUBLIC app::app ${CMAKE_DL_LIBS} pthread)
 target_compile_features(plotdemo1 PRIVATE cxx_std_17)

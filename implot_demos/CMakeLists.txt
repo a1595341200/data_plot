@@ -37,6 +37,7 @@ target_link_libraries(${PROJECT_N}
     implot::implot
     nfd
     glad
+    ${CMAKE_DL_LIBS}
 )
 target_compile_features(${PROJECT_N}  PRIVATE cxx_std_17)
 
