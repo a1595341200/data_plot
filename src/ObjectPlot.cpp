@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:08:14
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-04-02 15:20:48
+ * @LastEditTime: 2024-06-30 21:48:39
  * @FilePath: /cplusplus/submodule/data_plot/src/ObjectPlot.cpp
  * @Description:
  *
@@ -74,7 +74,7 @@ std::unique_ptr<ObjectPlot> ObjectPlot::objPlotPtr = nullptr;
 
 template <typename T>
 void ObjectPlot::convertData(
-    std::unordered_map<std::string, std::map<int, ObjectData>>& objs, const std::string& name,
+    std::unordered_map<std::string, std::map<int, ObjectData>>& _objs, const std::string& name,
     T* objList) {}
 
 void ObjectPlot::startPLot() {

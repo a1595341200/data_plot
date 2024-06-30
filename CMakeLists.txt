@@ -14,7 +14,16 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
 find_package(app CONFIG REQUIRED)
 # find_package(glfw3 CONFIG REQUIRED)
-
+add_compile_options(
+    -Wall            # 启用所有常见警告
+    -Wextra          # 启用额外的警告
+    -Werror          # 将警告视为错误
+    -pedantic        # 严格遵循C标准
+    -Wshadow         # 警告变量名被隐藏的情况
+    -Wno-conversion  # 忽略隐式转换警告
+    -Wsign-conversion # 警告有符号和无符号之间的隐式转换
+    -Wno-unused      # 忽略未使用警告
+)
 add_executable(plotdemo 
     plotdemo.cpp 
 )

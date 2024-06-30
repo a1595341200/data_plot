@@ -66,7 +66,7 @@ struct ObjectPlot : App {
         T* fl_radar_obj, T* fr_rdara_obj, T* rl_radar_obj, T* rr_rdara_obj);
     template <typename T>
     void convertData(
-        std::unordered_map<std::string, std::map<int, ObjectData>>& objs, const std::string& name,
+        std::unordered_map<std::string, std::map<int, ObjectData>>& _objs, const std::string& name,
         T* objList);
 
     template <typename T>

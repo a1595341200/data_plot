@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:11:33
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-04-02 15:00:31
+ * @LastEditTime: 2024-06-30 21:50:19
  * @FilePath: /cplusplus/submodule/data_plot/include/ObjectData.h
  * @Description:
  *
@@ -29,7 +29,7 @@ public:
     ObjectData();
     ObjectData(int _id, const std::string& _label, int _maxCount = 100);
     void reset();
-    inline static std::unordered_map<int64_t, std::string> id2yLabel{
+    inline static std::unordered_map<uint64_t, std::string> id2yLabel{
         {X, "x"},
         {Y, "y"},
         {VX, "vx"},
