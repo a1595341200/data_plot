@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(plotdemo)
 # set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/../../build_install)
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build_install")
+# list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build_install")
 # include_directories(
 #     ${CMAKE_CURRENT_SOURCE_DIR}/imgui
 #     ${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends
