@@ -31,6 +31,7 @@ target_include_directories(${PROJECT_N}
     PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common>
     $<INSTALL_INTERFACE:include/app>
+    $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(${PROJECT_N}
     PUBLIC
