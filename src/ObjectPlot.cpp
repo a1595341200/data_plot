@@ -2,7 +2,7 @@
  * @Author: yao.xie 1595341200@qq.com
  * @Date: 2024-03-15 16:08:14
  * @LastEditors: yao.xie 1595341200@qq.com
- * @LastEditTime: 2024-06-30 21:48:39
+ * @LastEditTime: 2024-11-08 14:11:45
  * @FilePath: /cplusplus/submodule/data_plot/src/ObjectPlot.cpp
  * @Description:
  *
@@ -10,14 +10,23 @@
  */
 #include "ObjectPlot.h"
 
+#include <Image.h>
+
+#include <cmath>
 #include <thread>
 
+#include "Convert.h"
+#include "PlotIndex.h"
+#include "Utils.h"
+
+// stb_image.h: Download from https://github.com/nothings/stb/blob/master/stb_image.h
+#define STB_IMAGE_IMPLEMENTATION
 #include "AppLog.h"
 
 ObjectPlot::ObjectPlot(std::string title, int w, int h) : App(title, w, h) {
     basePlot = [&](std::function<void()> func) {
         if (ImGui::Button("Reset Data")) {
-            objs.clear();
+            objs->clear();
         }
         ImGui::NewLine();
         for (auto& sceneName : mDndNameMap) {
@@ -36,7 +45,7 @@ ObjectPlot::ObjectPlot(std::string title, int w, int h) : App(title, w, h) {
                 continue;
             }
             ImGui::BeginChild(name.c_str(), ImVec2(200, 1080));
-            for (auto& obj : objs[sceneName.first]) {
+            for (auto& obj : (*objs)[sceneName.first]) {
                 if (obj.second.subPlotId != -1) {
                     continue;
                 }
@@ -56,7 +65,7 @@ ObjectPlot::ObjectPlot(std::string title, int w, int h) : App(title, w, h) {
             if (ImGui::BeginDragDropTarget()) {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MY_DND")) {
                     auto tmp = *(PlotIndex*)payload->Data;
-                    objs[tmp.name][tmp.id].subPlotId = -1;
+                    (*objs)[tmp.name][tmp.id].subPlotId = -1;
                 }
                 ImGui::EndDragDropTarget();
             }
@@ -72,19 +81,47 @@ ObjectPlot::ObjectPlot(std::string title, int w, int h) : App(title, w, h) {
 
 std::unique_ptr<ObjectPlot> ObjectPlot::objPlotPtr = nullptr;
 
-template <typename T>
-void ObjectPlot::convertData(
-    std::unordered_map<std::string, std::map<int, ObjectData>>& _objs, const std::string& name,
-    T* objList) {}
-
 void ObjectPlot::startPLot() {
     std::thread t([&] {
         std::this_thread::sleep_for(std::chrono::seconds(2));
         objPlotPtr = std::make_unique<ObjectPlot>("Object Plot", 1920, 1080);
-        objPlotPtr->init();
+        objPlotPtr->Init();
         objPlotPtr->Run();
     });
     t.detach();
+}
+
+GLuint loadImageToTexture(const char* filename, int* image_width, int* image_height) {
+    int channels;
+    unsigned char* image_data = stbi_load(filename, image_width, image_height, &channels, 4);
+    if (image_data == nullptr) {
+        return 0;
+    }
+
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGBA, *image_width, *image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+        image_data);
+
+    stbi_image_free(image_data);
+
+    return texture;
+}
+
+void showImage(const std::string& filename) {
+    int img_width, img_height;
+    Image image;
+    GLuint img_texture = loadImageToTexture(
+        "/home/user/图片/2024-09-25 10-53-54 的屏幕截图.png", &img_width, &img_height);
+    ImGui::Image((ImTextureID)(intptr_t)img_texture, ImVec2(img_width, img_height));
 }
 
 void ObjectPlot::Update() {
@@ -160,7 +197,7 @@ void ObjectPlot::dragAndDropPlot(bool* open) {
                     min = std::min(min, time);
                     ImPlot::SetupAxes("time", objPlot.second.yLabel.c_str());
 
-                    for (auto& list : objs) {
+                    for (auto& list : (*objs)) {
                         for (auto& obj : list.second) {
                             if (obj.second.subPlotId != -1 &&
                                 obj.second.data[ObjectData::X].size() > 0) {
@@ -186,7 +223,7 @@ void ObjectPlot::dragAndDropPlot(bool* open) {
                     if (ImPlot::BeginDragDropTargetPlot()) {
                         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MY_DND")) {
                             auto tmp = *(PlotIndex*)payload->Data;
-                            objs[tmp.name][tmp.id].subPlotId = 1;
+                            (*objs)[tmp.name][tmp.id].subPlotId = 1;
                         }
                         ImPlot::EndDragDropTarget();
                     }
@@ -194,7 +231,7 @@ void ObjectPlot::dragAndDropPlot(bool* open) {
                     if (ImPlot::BeginDragDropTargetLegend()) {
                         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MY_DND")) {
                             auto tmp = *(PlotIndex*)payload->Data;
-                            objs[tmp.name][tmp.id].subPlotId = 1;
+                            (*objs)[tmp.name][tmp.id].subPlotId = 1;
                         }
                         ImPlot::EndDragDropTarget();
                     }
@@ -215,7 +252,7 @@ void ObjectPlot::dragClassProb(bool* open) {
             if (ImPlot::BeginPlot("##DND")) {
                 static double min{INT_MAX};
                 min = std::min(min, time);
-                for (auto& list : objs) {
+                for (auto& list : *objs) {
                     for (auto& obj : list.second) {
                         if (obj.second.subPlotId != -1 &&
                             obj.second.data[ObjectData::X].size() > 0) {
@@ -241,7 +278,7 @@ void ObjectPlot::dragClassProb(bool* open) {
                 if (ImPlot::BeginDragDropTargetPlot()) {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MY_DND")) {
                         auto tmp = *(PlotIndex*)payload->Data;
-                        objs[tmp.name][tmp.id].subPlotId = 1;
+                        (*objs)[tmp.name][tmp.id].subPlotId = 1;
                     }
                     ImPlot::EndDragDropTarget();
                 }
@@ -249,7 +286,7 @@ void ObjectPlot::dragClassProb(bool* open) {
                 if (ImPlot::BeginDragDropTargetLegend()) {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MY_DND")) {
                         auto tmp = *(PlotIndex*)payload->Data;
-                        objs[tmp.name][tmp.id].subPlotId = 1;
+                        (*objs)[tmp.name][tmp.id].subPlotId = 1;
                     }
                     ImPlot::EndDragDropTarget();
                 }
@@ -279,57 +316,19 @@ template <typename T>
 void ObjectPlot::plot(
     T* front_cam_obj, T* front_radar_obj, const T& output, T* const side_cam_obj, T* fl_radar_obj,
     T* fr_rdara_obj, T* rl_radar_obj, T* rr_rdara_obj) {
-    addCamera(front_cam_obj);
-    addRadar(front_radar_obj);
-    addFusion(output);
-    addSideCamera(side_cam_obj);
-    addFl_radar(fl_radar_obj);
-    addfr_radar(fr_rdara_obj);
-    addrl_radar(rl_radar_obj);
-    addrr_radar(rr_rdara_obj);
-    count++;
-}
-
-template <typename T>
-void ObjectPlot::addCamera(T* front_cam_obj) {
-    convertData(objs, "DND_FRONT_CAMERA", front_cam_obj);
-}
-
-template <typename T>
-void ObjectPlot::addFusion(const T& output) {}
-
-template <typename T>
-void ObjectPlot::addRadar(T* front_radar_obj) {
-    convertData(objs, "DND_FRONT_RADAR", front_radar_obj);
-}
-
-template <typename T>
-void ObjectPlot::addSideCamera(T* side_cam_obj) {
-    convertData(objs, "DND_SIDE_CAMERA", side_cam_obj);
-}
-
-template <typename T>
-void ObjectPlot::addFl_radar(T* fl_radar_obj) {
-    convertData(objs, "DND_FL_RADAR", fl_radar_obj);
-}
-
-template <typename T>
-void ObjectPlot::addfr_radar(T* fr_rdara_obj) {
-    convertData(objs, "DND_FR_RADAR", fr_rdara_obj);
-}
-
-template <typename T>
-void ObjectPlot::addrl_radar(T* rl_radar_obj) {
-    convertData(objs, "DND_RL_RADAR", rl_radar_obj);
-}
-
-template <typename T>
-void ObjectPlot::addrr_radar(T* rr_rdara_obj) {
-    convertData(objs, "DND_RR_RADAR", rr_rdara_obj);
+    Convert::convert(front_cam_obj, mDataCenter);
+    Convert::convert(front_radar_obj, mDataCenter);
+    Convert::convert(output, mDataCenter);
+    Convert::convert(side_cam_obj, mDataCenter);
+    Convert::convert(fl_radar_obj, mDataCenter);
+    Convert::convert(fr_rdara_obj, mDataCenter);
+    Convert::convert(rl_radar_obj, mDataCenter);
+    Convert::convert(rr_rdara_obj, mDataCenter);
+    (*frameCount)++;
 }
 
 void ObjectPlot::plotSelf() {
-    auto points = rotatedRect(-1.15, 0, 2.425, 0.96, 1, 1);
+    auto points = Utils::rotatedRect(-1.15, 0, 2.425, 0.96, 1, 1);
     ImPlot::SetNextLineStyle(ImVec4(255, 0, 0, 255), 4.0);
     ImPlot::PlotLine("", &points[0].x, &points[0].y, 5, 0, 0, 2 * sizeof(float));
 }
@@ -346,34 +345,9 @@ void ObjectPlot::plotRect(
     ImPlot::PlotLine("", &points[0].x, &points[0].y, 5, 0, 0, 2 * sizeof(float));
 }
 
-std::vector<ImVec2> ObjectPlot::rotatedRect(
-    double x, double y, double half_length, double half_width, double angle, uint8_t nearest_side) {
-    double c = cos(angle);
-    double s = sin(angle);
-    if (nearest_side == 0) {
-    } else if (nearest_side == 1) {
-        x = x + half_length * c;
-        y = y + half_length * s;
-    } else if (nearest_side == 2) {
-        x = x - half_length * c;
-        y = y - half_length * s;
-    } else if (nearest_side == 3) {
-        x = x - half_width * s;
-        y = y + half_width * c;
-    } else if (nearest_side == 4) {
-        x = x + half_width * s;
-        y = y - half_width * c;
-    }
-    double r1x = -half_length * c - half_width * s;
-    double r1y = -half_length * s + half_width * c;
-    double r2x = half_length * c - half_width * s;
-    double r2y = half_length * s + half_width * c;
-    return {
-        ImVec2(x + r1x, y + r1y), ImVec2(x + r2x, y + r2y), ImVec2(x - r1x, y - r1y),
-        ImVec2(x - r2x, y - r2y), ImVec2(x + r1x, y + r1y)};
-}
-
-void ObjectPlot::init() {
+void ObjectPlot::Init() {
+    objs = mDataCenter->objs;
+    frameCount = mDataCenter->frameCount;
     for (size_t i = 0; i < ObjectData::MAX; ++i) {
         mObjPlotMap.emplace(i, ObjPlotSelect{ObjectData::id2yLabel[i], false});
     }
